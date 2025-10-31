@@ -1,5 +1,8 @@
 #include <print>
 #include "Logger.h"
 int main() {
-    Logger::Warn();
+    Logger::Setup("");
+    Logger::Warn("Something whent wrong");
+    Logger::Warn("Something wrong");
+    Logger::Stop();
 }
