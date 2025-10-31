@@ -12,9 +12,9 @@ enum class LogLevel { DEBUG, INFO, WARN, ERROR };
 
 class ImplLogger {
    public:
-    static ImplLogger&             instance();
+    static ImplLogger             &instance();
     void                           setLogFilePath(std::string_view path);
-    void                           addToQueue(LogLevel level, const std::string& message);
+    void                           addToQueue(LogLevel level, const std::string &message);
     void                           setColored(bool colored);
     void                           setDebug(bool debug);
     void                           stop();
@@ -85,14 +85,14 @@ void ImplLogger::setDebug(const bool debug) {
 
 bool ImplLogger::isDebug() const { return mDebug; }
 
-ImplLogger& ImplLogger::instance() {
+ImplLogger &ImplLogger::instance() {
     static ImplLogger mInstance{};
     return mInstance;
 }
 
 void ImplLogger::setLogFilePath(const std::string_view path) { mLogFilePath = path; }
 
-void ImplLogger::addToQueue(const LogLevel level, const std::string& message) {
+void ImplLogger::addToQueue(const LogLevel level, const std::string &message) {
     std::lock_guard<std::mutex> lock(mLogMutex);
     mLogQueue.push("[" + getCurrentTimeString() + "]" + getLogLevelColor(level) + message + "\n");
 }
@@ -112,7 +112,7 @@ void ImplLogger::start() { mThread = std::thread(&ImplLogger::run, this); }
 std::string_view ImplLogger::getLogFilePath() const { return mLogFilePath; }
 
 void ImplLogger::run() {
-    FILE* file = std::fopen(mLogFilePath.data(), "a");
+    FILE *file = std::fopen(mLogFilePath.data(), "a");
     while (mRunning || !mLogQueue.empty()) {
         if (!mLogQueue.empty()) {
             std::print("{}", mLogQueue.front());
