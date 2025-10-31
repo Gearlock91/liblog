@@ -1,0 +1,23 @@
+BasedOnStyle: google
+Language: Cpp
+AllowAllArgumentsOnNextLine: false
+AlignAfterOpenBracket: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+BinPackArguments: false
+ColumnLimit: 120
+NamespaceIndentation: All
+IncludeBlocks:   Preserve
+SeparateDefinitionBlocks: Never
+IncludeCategories:
+  - Regex:           '^<ext/.*\.h>'
+    Priority:        3
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+  - Regex:           '^<.*'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        1
+IndentWidth: 4
+SortIncludes: true
+Standard:   c++20

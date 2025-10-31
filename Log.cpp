@@ -16,12 +16,12 @@ enum class LogLevel {
 };
 
 class ImplLogger {
-public:
-    static ImplLogger &instance();
+public:§
+    static ImplLogger& instance();
 
     void setLogFilePath(std::string_view path);
 
-    void addToQueue(LogLevel level, const std::string &message);
+    void addToQueue(LogLevel level, const std::string& message);
 
     void setColored(bool colored);
 
@@ -48,13 +48,13 @@ private:
 
     static std::string getCurrentTimeString();
 
-    std::string_view mLogFilePath;
+    std::string_view        mLogFilePath;
     std::queue<std::string> mLogQueue;
-    std::mutex mLogMutex;
-    std::thread mThread;
-    bool mRunning = true;
-    bool mColored = false;
-    bool mDebug = false;
+    std::mutex              mLogMutex;
+    std::thread             mThread;
+    bool                    mRunning = true;
+    bool                    mColored = false;
+    bool                    mDebug   = false;
 };
 
 std::string ImplLogger::logLevelFormat(const LogLevel level) {
@@ -76,22 +76,30 @@ std::string ImplLogger::getLogLevelColor(const LogLevel level) const {
     switch (level) {
         case LogLevel::DEBUG:
             result = mColored
-                         ? std::string{"\033[34m" + logLevelFormat(LogLevel::DEBUG) + "\033[0m"}
+                         ? std::string{
+                             "\033[34m" + logLevelFormat(LogLevel::DEBUG) +
+                             "\033[0m"}
                          : logLevelFormat(LogLevel::DEBUG);
             break;
         case LogLevel::INFO:
             result = mColored
-                         ? std::string{"\033[32m" + logLevelFormat(LogLevel::INFO) + "\033[0m"}
+                         ? std::string{
+                             "\033[32m" + logLevelFormat(LogLevel::INFO) +
+                             "\033[0m"}
                          : logLevelFormat(LogLevel::INFO);
             break;
         case LogLevel::WARN:
             result = mColored
-                         ? std::string{"\033[33m" + logLevelFormat(LogLevel::WARN) + "\033[0m"}
+                         ? std::string{
+                             "\033[33m" + logLevelFormat(LogLevel::WARN) +
+                             "\033[0m"}
                          : logLevelFormat(LogLevel::WARN);
             break;
         case LogLevel::ERROR:
             result = mColored
-                         ? std::string{"\033[31m" + logLevelFormat(LogLevel::ERROR) + "\033[0m"}
+                         ? std::string{
+                             "\033[31m" + logLevelFormat(LogLevel::ERROR) +
+                             "\033[0m"}
                          : logLevelFormat(LogLevel::ERROR);
             break;
     }
@@ -107,7 +115,7 @@ bool ImplLogger::isDebug() const {
     return mDebug;
 }
 
-ImplLogger &ImplLogger::instance() {
+ImplLogger& ImplLogger::instance() {
     static ImplLogger mInstance{};
     return mInstance;
 }
@@ -116,9 +124,11 @@ void ImplLogger::setLogFilePath(const std::string_view path) {
     mLogFilePath = path;
 }
 
-void ImplLogger::addToQueue(const LogLevel level, const std::string &message) {
+void ImplLogger::addToQueue(const LogLevel level, const std::string& message) {
     std::lock_guard<std::mutex> lock(mLogMutex);
-    mLogQueue.push("[" + getCurrentTimeString() + "]" + getLogLevelColor(level) + message + "\n");
+    mLogQueue.push(
+        "[" + getCurrentTimeString() + "]" + getLogLevelColor(level) + message +
+        "\n");
 }
 
 void ImplLogger::setColored(const bool colored) {
@@ -144,7 +154,7 @@ std::string_view ImplLogger::getLogFilePath() const {
 }
 
 void ImplLogger::run() {
-    FILE *file = std::fopen(mLogFilePath.data(), "a");
+    FILE* file = std::fopen(mLogFilePath.data(), "a");
     while (mRunning || !mLogQueue.empty()) {
         if (!mLogQueue.empty()) {
             std::print("{}", mLogQueue.front());
@@ -156,12 +166,14 @@ void ImplLogger::run() {
 
 std::string ImplLogger::getCurrentTimeString() {
     using namespace std::chrono;
-    return std::format("{:%F %X}", zoned_time{current_zone(), system_clock::now()});
+    return std::format("{:%F %X}",
+                       zoned_time{current_zone(), system_clock::now()});
 }
 
 using namespace Logger;
 
-void Log::Setup(const std::string_view logFilePath, const bool colored, const bool debug) {
+void Log::Setup(const std::string_view logFilePath, const bool colored,
+                const bool             debug) {
     if (ImplLogger::instance().getLogFilePath().empty())
         ImplLogger::instance().setLogFilePath(logFilePath);
     ImplLogger::instance().setColored(colored);
@@ -184,7 +196,8 @@ void Log::Warn(const std::string_view message) {
 
 void Log::Debug(const std::string_view message) {
     if (ImplLogger::instance().isDebug()) {
-        ImplLogger::instance().addToQueue(LogLevel::DEBUG, std::string(message));
+        ImplLogger::instance().
+            addToQueue(LogLevel::DEBUG, std::string(message));
     }
 }
 
