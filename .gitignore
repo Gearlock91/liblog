@@ -34,3 +34,6 @@
 
 out
 .vs
+.vscode/
+.cmake-build-debug/
+.idea/
