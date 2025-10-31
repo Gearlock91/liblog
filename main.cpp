@@ -1,8 +1,13 @@
 #include <print>
-#include "Logger.h"
+#include "Log.h"
 int main() {
-    Logger::Setup("");
-    Logger::Warn("Something whent wrong");
-    Logger::Warn("Something wrong");
-    Logger::Stop();
+    using namespace Logger;
+    Log::Setup("./log.txt", true, true);
+    Log::Info("Starting software...");
+    Log::Warn("Something went wrong");
+    Log::Warn("Something wrong");
+    Log::Debug("Debug line");
+    Log::Info("Informational message");
+    Log::Err("Critical message");
+    Log::Stop();
 }

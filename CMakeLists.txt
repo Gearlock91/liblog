@@ -12,7 +12,7 @@ endif()
 project ("Logger")
 
 # Add source to this project's executable.
-add_executable (Logger "main.cpp" "Logger.cpp")
+add_executable (Logger "main.cpp" "Log.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Logger PROPERTY CXX_STANDARD 23)
