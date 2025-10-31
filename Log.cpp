@@ -16,7 +16,7 @@ enum class LogLevel {
 };
 
 class ImplLogger {
-public:§
+public:
     static ImplLogger& instance();
 
     void setLogFilePath(std::string_view path);
