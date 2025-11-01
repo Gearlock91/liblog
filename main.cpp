@@ -2,7 +2,7 @@
 #include "Log.h"
 int main() {
     using namespace Logger;
-    Log::Setup("./log.txt", false, true);
+    Log::Setup("./log.txt", true, true);
     Log::Info("Starting software...");
     Log::Warn("Something went wrong");
     Log::Warn("Something wrong");

@@ -10,6 +10,8 @@
 
 enum class LogLevel { DEBUG, INFO, WARN, ERROR };
 
+enum class LogParts : int { TIME, COLORED, UNCOLORED, MESSAGE, TOTAL };
+
 class ImplLogger {
    public:
     static ImplLogger             &instance();
@@ -29,14 +31,14 @@ class ImplLogger {
     ImplLogger() = default;
     void               run();
     static std::string getCurrentTimeString();
-
-    std::string_view                       mLogFilePath;
-    std::queue<std::array<std::string, 4>> mLogQueue;
-    std::mutex                             mLogMutex;
-    std::thread                            mThread;
-    bool                                   mRunning = true;
-    bool                                   mColored = false;
-    bool                                   mDebug   = false;
+    using LogMessage = std::array<std::string, static_cast<int>(LogParts::TOTAL)>;
+    std::string_view       mLogFilePath;
+    std::queue<LogMessage> mLogQueue;
+    std::mutex             mLogMutex;
+    std::thread            mThread;
+    bool                   mRunning = true;
+    bool                   mColored = false;
+    bool                   mDebug   = false;
 };
 
 std::string ImplLogger::logLevelFormat(const LogLevel level) {
@@ -91,11 +93,11 @@ ImplLogger &ImplLogger::instance() {
 void ImplLogger::setLogFilePath(const std::string_view path) { mLogFilePath = path; }
 
 void ImplLogger::addToQueue(const LogLevel level, const std::string &message) {
-    std::lock_guard<std::mutex>      lock(mLogMutex);
-    const std::array<std::string, 4> parts{"[" + getCurrentTimeString() + "]",
-                                           getLogLevelColor(level, mColored),
-                                           getLogLevelColor(level, false),
-                                           message + "\n"};
+    std::lock_guard<std::mutex> lock(mLogMutex);
+    const LogMessage            parts{"[" + getCurrentTimeString() + "]",
+                           getLogLevelColor(level, mColored),
+                           getLogLevelColor(level, false),
+                           message + "\n"};
     mLogQueue.push(parts);
 }
 
@@ -117,8 +119,15 @@ void ImplLogger::run() {
     FILE *file = std::fopen(mLogFilePath.data(), "a");
     while (mRunning || !mLogQueue.empty()) {
         if (!mLogQueue.empty()) {
-            std::print("{}{}{}", mLogQueue.front()[0], mLogQueue.front()[1], mLogQueue.front()[3]);
-            std::print(file, "{}{}{}", mLogQueue.front()[0], mLogQueue.front()[2], mLogQueue.front()[3]);
+            std::print("{}{}{}",
+                       mLogQueue.front()[static_cast<int>(LogParts::TIME)],
+                       mLogQueue.front()[static_cast<int>(LogParts::COLORED)],
+                       mLogQueue.front()[static_cast<int>(LogParts::MESSAGE)]);
+            std::print(file,
+                       "{}{}{}",
+                       mLogQueue.front()[static_cast<int>(LogParts::TIME)],
+                       mLogQueue.front()[static_cast<int>(LogParts::UNCOLORED)],
+                       mLogQueue.front()[static_cast<int>(LogParts::MESSAGE)]);
             mLogQueue.pop();
         }
     }
