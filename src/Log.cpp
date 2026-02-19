@@ -5,8 +5,9 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <array>
 
-#include "Log.h"
+#include "../include/Log.hpp"
 
 enum class LogLevel { DEBUG, INFO, WARN, ERROR };
 
